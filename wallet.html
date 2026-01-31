@@ -1,0 +1,164 @@
+<div id="wallet"
+     data-balance="5.00"
+     data-cost="0.10"
+     data-max-balance="50.00"
+     data-warning-threshold="5.00">
+
+
+  <div class="info">
+    <span class="label">Per Message</span>
+    <span id="costPerMessage" class="value">0.1</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="info">
+    <span class="label">Balance</span>
+    <span id="balance" class="value">$5.00</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="info">
+    <span class="label">Messages</span>
+    <span id="quota" class="value">50</span>
+  </div>
+
+  <button id="addMoney">Add funds</button>
+</div>
+
+<style>
+#wallet {
+  --bg: #0e0f12;
+  --border: #1f232b;
+  --text-main: #ffffff;
+  --text-muted: #9aa0aa;
+  --accent: #4f7cff;
+  --accent-hover: #6b9cff;
+  --warning: #f59e0b;
+
+  display: inline-flex;     
+  align-items: center;
+  justify-content: flex-start; /* prevent stretching */
+  gap: 16px;
+
+  padding: 12px 18px;
+  background: var(--bg);
+  color: var(--text-main);
+  font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  width: auto;     
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;       /* prevent label/value wrapping */
+    
+  text-align: center; 
+
+}
+
+
+
+
+
+.label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.divider {
+  width: 1px;
+  height: 28px;
+  background: var(--border);
+}
+
+/* states */
+#wallet[data-state="warning"] .value {
+  color: var(--warning);
+}
+
+#wallet[data-state="maxed"] #addMoney {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* button */
+#wallet button {
+  margin-left: 8px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  flex-shrink: 0; 
+}
+
+#wallet button:hover {
+  filter: brightness(1.08);
+}
+
+#wallet button:active {
+  transform: translateY(1px);
+}
+</style>
+
+<script>
+const walletEl = document.getElementById("wallet");
+
+const WalletState = {
+  balance: parseFloat(walletEl.dataset.balance),
+  costPerMessage: parseFloat(walletEl.dataset.cost),
+  maxBalance: parseFloat(walletEl.dataset.maxBalance),
+  warningThreshold: parseFloat(walletEl.dataset.warningThreshold)
+};
+
+function renderWallet() {
+  const messagesLeft = Math.floor(
+    WalletState.balance / WalletState.costPerMessage
+  );
+
+  walletEl.dataset.state =
+    WalletState.balance <= WalletState.warningThreshold
+      ? "warning"
+      : WalletState.balance >= WalletState.maxBalance
+      ? "maxed"
+      : "normal";
+
+  document.getElementById("balance").textContent =
+    `$${WalletState.balance.toFixed(2)}`;
+  document.getElementById("quota").textContent =
+    messagesLeft;
+}
+
+function addBalance(amount) {
+  WalletState.balance = Math.min(
+    WalletState.balance + amount,
+    WalletState.maxBalance
+  );
+  renderWallet();
+}
+
+// placeholder for future API binding
+document.getElementById("addMoney").onclick = () => {
+  if (WalletState.balance < WalletState.maxBalance) {
+    addBalance(5.00);
+  }
+};
+
+renderWallet();
+</script>

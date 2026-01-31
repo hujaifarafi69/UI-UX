@@ -1,0 +1,1686 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard | Matrix AI</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+/* ==============================
+   ROOT VARIABLES & BASE STYLES
+============================== */
+:root {
+  --bg: #f7fbff;
+  --panel: #ffffff;
+  --muted: #64748b;
+  --accent: #2563eb;
+  --soft: #f1f5f9;
+  --radius: 12px;
+  --shadow: 0 6px 20px rgba(16, 24, 40, 0.08);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ==============================
+   SIDEBAR
+============================== */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #fff, #fbfdff);
+  padding: 28px;
+  border-right: 1px solid #eef2f6;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  transition: transform 0.3s ease;
+  z-index: 1001;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), #60a5fa);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.brand-text {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 18px;
+}
+
+.nav-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #0f172a;
+  text-decoration: none;
+  font-weight: 600;
+  opacity: 0.88;
+  transition: background 0.2s ease;
+}
+
+.nav-item:hover {
+  background: var(--soft);
+}
+
+.nav-item.active {
+  background: linear-gradient(90deg, #eef2ff, #f5faff);
+  box-shadow: var(--shadow);
+}
+
+/* ==============================
+   MAIN LAYOUT
+============================== */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 260px;
+  transition: margin-left 0.3s ease;
+}
+
+/* ==============================
+   TOPBAR
+============================== */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 28px;
+  background: #fff;
+  border-bottom: 1px solid #eef2f6;
+}
+
+.search-wrap {
+  flex: 1;
+  max-width: 640px;
+}
+
+.search {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #e6eefc;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Buttons & Avatar */
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #1e4ed8;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #eef2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ==============================
+   CONTENT & FOOTER
+============================== */
+.content {
+  padding: 20px 28px 40px;
+}
+
+.footer {
+  padding: 18px 28px;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ==============================
+   HAMBURGER MENU
+============================== */
+.menu-toggle {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  display: none;
+  padding: 6px 10px;
+}
+
+/* ==============================
+   OVERLAY (MOBILE BACKDROP)
+============================== */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+}
+
+.overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ==============================
+   RESPONSIVE DESIGN
+============================== */
+@media (max-width: 1000px) {
+  .menu-toggle {
+    display: block; /* show hamburger */
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .main {
+    margin-left: 0;
+  }
+
+  body.sidebar-open {
+    overflow: hidden; /* prevent scroll when sidebar open */
+  }
+
+  .search-wrap {
+    display: none; /* hide search if screen too small */
+  }
+}
+
+@media (max-width: 600px) {
+  .btn-primary {
+    padding: 8px;
+    font-size: 0.85rem;
+  }
+
+  .topbar {
+    padding: 16px;
+  }
+
+  .content {
+    padding: 16px;
+  }
+}
+</style>
+
+
+
+  
+<style>
+/* =====================
+   BASE STYLING
+===================== */
+:root {
+  --primary: #2563eb;
+  --accent: #3b82f6;
+  --bg-light: #f8fafc;
+  --border: #e2e8f0;
+  --muted: #64748b;
+}
+
+.content {
+  padding: 20px;
+  background: var(--bg-light);
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.page-header {
+  margin-bottom: 25px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 5px;
+}
+
+.page-header .sub {
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* =====================
+   PANEL & BUTTON
+===================== */
+.panel {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  padding: 20px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.panel-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.btn-primary:hover {
+  background: var(--accent);
+}
+
+/* =====================
+   TABLE STYLING
+===================== */
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.products-table th,
+.products-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+  color: #1f2937;
+}
+
+.products-table th {
+  background-color: #f1f5f9;
+  font-weight: 700;
+  color: #334155;
+}
+
+.products-table tr:hover {
+  background-color: #f9fafb;
+}
+
+/* =====================
+   STATUS SELECT
+===================== */
+.status-select {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+.status-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* =====================
+   RESPONSIVE DESIGN
+===================== */
+@media (max-width: 768px) {
+  .panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .products-table,
+  .products-table thead,
+  .products-table tbody,
+  .products-table th,
+  .products-table td,
+  .products-table tr {
+    display: block;
+  }
+
+  .products-table thead {
+    display: none;
+  }
+
+  .products-table tr {
+    background: #fff;
+    margin-bottom: 15px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  }
+
+  .products-table td {
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    padding: 8px 0;
+  }
+
+  .products-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .products-table td:last-child {
+    border-bottom: none;
+  }
+
+  .products-table td select {
+    width: 100%;
+    margin-top: 5px;
+  }
+  
+  /* Add labels for mobile using data-labels dynamically */
+  .products-table td:nth-child(1)::before { content: "Product"; }
+  .products-table td:nth-child(2)::before { content: "Stock"; }
+  .products-table td:nth-child(3)::before { content: "Price"; }
+  .products-table td:nth-child(4)::before { content: "Last Updated"; }
+  
+  
+}
+
+
+/* =====================
+   Popup STYLING
+===================== */
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: #f9fafb;
+}
+
+h1 {
+  text-align: center;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+button {
+  display: block;
+  margin: 10px auto 20px;
+  padding: 10px 20px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+button:hover {
+  background-color: #1d4ed8;
+}
+
+/* ===== Modal ===== */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 850px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ===== Header ===== */
+.modal-header {
+  grid-column: span 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 10px;
+}
+
+.close {
+  font-size: 24px;
+  cursor: pointer;
+  color: #555;
+}
+
+/* ===== Form ===== */
+.form-section label {
+  display: block;
+  font-weight: 600;
+  margin-top: 10px;
+  color: #1f2937;
+}
+
+.form-section input,
+.form-section textarea,
+.form-section select {
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 5px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.form-section textarea {
+  resize: vertical;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+.form-row > div {
+  flex: 1;
+}
+
+.publish-btn {
+  background-color: #16a34a;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 15px;
+  font-weight: 600;
+}
+.publish-btn:hover {
+  background-color: #15803d;
+}
+
+/* ===== Image Upload ===== */
+.image-upload {
+  border: 2px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  background-color: #f8fafc;
+  margin-top: 15px;
+}
+.image-upload input {
+  display: none;
+}
+.image-upload label {
+  cursor: pointer;
+  color: #2563eb;
+  font-weight: 600;
+}
+.preview {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+.preview img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .modal-content {
+    grid-template-columns: 1fr;
+    width: 95%;
+  }
+  .modal-header {
+    grid-column: span 1;
+  }
+  .form-row {
+    flex-direction: column;
+  }
+}
+    /* POPUp END */
+
+</style>
+
+
+
+<style>
+/* =====================
+   Edit Popup STYLING
+===================== */
+/* static/back/css/edit_popup.css */
+
+.edit-popup-wrapper {
+  font-family: "Poppins", sans-serif;
+}
+
+.edit-modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  justify-content: center;
+  align-items: center;
+}
+
+.edit-modal-body {
+  background: #fff;
+  border-radius: 18px;
+  width: 90%;
+  max-width: 640px;
+  padding: 2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  animation: popupFade 0.3s ease-in-out;
+}
+
+@keyframes popupFade {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.edit-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+}
+
+.edit-modal-header h2 {
+  color: #333;
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.edit-close-btn {
+  cursor: pointer;
+  font-size: 1.8rem;
+  color: #555;
+}
+
+.edit-form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.edit-form-row div {
+  flex: 1;
+  min-width: 48%;
+}
+
+.edit-form-section label {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #555;
+}
+
+.edit-form-section input,
+.edit-form-section textarea,
+.edit-form-section select {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  background-color: #f9faff;
+}
+
+.edit-form-section input:focus,
+.edit-form-section textarea:focus,
+.edit-form-section select:focus {
+  border-color: #4f46e5;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+.edit-upload-container {
+  border: 2px dashed #cbd5e1;
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+  background-color: #f8fafc;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.edit-upload-container label {
+  color: #6366f1;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.edit-upload-container input {
+  display: none;
+}
+
+.edit-image-preview img {
+  width: 100px;
+  height: auto;
+  border-radius: 8px;
+  margin: 5px;
+  transition: transform 0.2s ease;
+}
+
+.edit-image-preview img:hover {
+  transform: scale(1.05);
+}
+
+.edit-submit-btn {
+  background: linear-gradient(90deg, #6366f1, #4f46e5);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 0.9rem 1.2rem;
+  width: 100%;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.edit-submit-btn:hover {
+  background: linear-gradient(90deg, #4f46e5, #4338ca);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(79, 70, 229, 0.3);
+}
+
+
+.delete-prod-btn {
+  background: linear-gradient(90deg, #f06593ff, #e5467bff);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 0.9rem 1.2rem;
+  width: 100%;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.delete-prod-btn:hover {
+  background: linear-gradient(90deg, #e5467bff, #9e3055ff);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(79, 70, 229, 0.3);
+}
+
+@media (max-width: 576px) {
+  .edit-form-row {
+    flex-direction: column;
+  }
+
+  .edit-modal-body {
+    padding: 1.5rem;
+  }
+}
+/* =====================
+   Edit Popup STYLING
+===================== */
+
+
+</style>
+
+</head>
+
+<body>
+  <div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="logo">MA</div>
+      <div class="brand-text">Matrix AI</div>
+    </div>
+    <nav class="nav">
+      <a class="nav-item " href="/db">🏠 Dashboard</a>
+      <a class="nav-item active" href="/dbproducts">📦 Products</a>
+      <a class="nav-item " href="/dbpackages">🧾 Packages</a>
+      <a class="nav-item " href="/dborders">🧾 Orders</a>
+      <a class="nav-item " href="/dbchats">🧾 Messages</a>
+      <a class="nav-item " href="/dboptions">🧾 Settings</a>
+      
+      
+      
+      
+      <a class="nav-item" href="/logout">⚙️ Logout</a>
+    </nav>
+  </aside>
+
+ <!-- Overlay -->
+    <div id="overlay" class="overlay"></div>
+
+  <!-- Main -->
+  <main class="main">
+    <header class="topbar">
+        <div class="left-section">
+          <!-- Hamburger button (only visible on mobile) -->
+          <button id="menuToggle" class="menu-toggle">☰</button>
+
+          <div class="search-wrap">
+            <input class="search" placeholder="Search conversations, products..." />
+          </div>
+        </div>
+
+        <div class="top-actions">
+          <button id="connectBtn" class="btn-primary">Connect Messenger</button>
+          <div class="avatar" id="avatarMenu">I</div>
+        </div>
+      </header>
+
+
+    <section class="content">
+      
+
+
+      <!-- Content -->
+      <div class="content">
+        <div class="page-header">
+          <h1>Product List</h1>
+          <p class="sub">Sync products from Shopify / WooCommerce or add manually</p>
+        </div>
+
+        <!-- Table -->
+        <div class="panel" style="margin-top:20px;">
+          <div class="panel-header">
+            <h3>All Products</h3>
+            <div style="display:flex; gap:10px;">
+              
+              <button id="openModal">Add New Product</button>
+              <button class="btn-primary" onclick="window.location.href='/dbproducts/import';">Export/Import</button>
+            </div>
+          </div>
+
+
+
+          <!-- PopUp start -->
+<div class="product-page">
+  <!-- Modal -->
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Product</h2>
+        <span class="close">&times;</span>
+      </div>
+
+      <div class="form-section">
+        <form id="productForm" enctype="multipart/form-data" method="POST" action="/dbproducts/add">
+          <input type="hidden" name="csrfmiddlewaretoken" value="ZzK9oVQPllwAKmSsdqrrUzY7wngj27BUaQUrdRP7nZGEoNWfZ2TynnW12jv2U3Ke">
+          <div class="form-row">
+            <div>
+              <label for="name">Product Name</label>
+              <input type="text" id="name" name="name" required>
+            </div>
+            <div>
+              <label for="price">Price (bdt)</label>
+              <input type="number" step="0.01" id="price" name="price" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="discounted_price">Discounted Price (bdt)</label>
+              <input type="number" step="0.01" id="discounted_price" name="discounted_price">
+            </div>
+            <div>
+              <label for="stock_quantity">Stock Quantity</label>
+              <input type="number" id="stock_quantity" name="stock_quantity" required>
+            </div>
+          </div>
+
+          <label for="description">Description</label>
+          <textarea id="description" name="description" rows="3" placeholder="Enter product description..."></textarea>
+
+          <label>Status</label>
+          <select id="status" name="status">
+            <option value="True" selected>Active</option>
+            <option value="False">Inactive</option>
+          </select>
+
+          
+
+          <div class="image-upload">
+            <input type="file" id="imageUpload" name="image" accept="image/*" multiple>
+            <label for="imageUpload">📁 Click to upload product images</label>
+            <div class="preview" id="preview"></div>
+          </div>
+
+          <button type="submit" class="publish-btn">Publish Product</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- PopUp end -->
+
+
+ <!-- Edit Product Html popup -->
+<div class="edit-popup-wrapper">
+  <div id="editPopupModal" class="edit-modal">
+    <div class="edit-modal-body">
+      <div class="edit-modal-header">
+        <h2>Edit Product</h2>
+        <span class="edit-close-btn">&times;</span>
+      </div>
+
+      <div class="edit-form-section">
+        <form id="editProductForm" enctype="multipart/form-data" method="POST" action="/dbproducts/add">
+          <input type="hidden" name="csrfmiddlewaretoken" value="ZzK9oVQPllwAKmSsdqrrUzY7wngj27BUaQUrdRP7nZGEoNWfZ2TynnW12jv2U3Ke">
+          <div class="edit-form-row">
+            <div>
+              <label for="edit_name">Product Name</label>
+              <input type="text" id="edit_name" name="name" required>
+            </div>
+            <div>
+              <label for="edit_price">Price (BDT)</label>
+              <input type="number" step="0.01" id="edit_price" name="price" required>
+            </div>
+          </div>
+
+          <div class="edit-form-row">
+            <div>
+              <label for="edit_discount_price">Discounted Price (BDT)</label>
+              <input type="number" step="0.01" id="edit_discount_price" name="discounted_price">
+            </div>
+            <div>
+              <label for="edit_stock">Stock Quantity</label>
+              <input type="number" id="edit_stock" name="stock_quantity" required>
+            </div>
+          </div>
+
+          <label for="edit_description">Description</label>
+          <textarea id="edit_description" name="description" rows="3" placeholder="Enter product description..."></textarea>
+
+          <label>Status</label>
+          <select id="edit_status" name="status">
+            <option value="True" selected>Active</option>
+            <option value="False">Inactive</option>
+          </select>
+
+          <div class="edit-upload-container">
+            <input type="file" id="edit_image_upload" name="image" accept="image/*" multiple>
+            <label for="edit_image_upload">📁 Upload product images</label>
+            <div class="edit-image-preview" id="edit_image_preview"></div>
+          </div>
+
+          <button type="submit" class="edit-submit-btn">Update Product</button>
+          <button type="button" class="delete-prod-btn">Delete Product</button>
+          
+          
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Product Html popup -->
+
+
+
+  
+
+          <table class="products-table" style="margin-top:12px;">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Stock</th>
+                <th>Price</th>
+                <th>Last Updated</th>
+                <th>Edit</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+              <tr>
+                <td>10&quot; Inch Bangla Quran</td>
+                <td>1000</td>
+                <td>1250.00</td>
+                <td>Jan. 17, 2026, 6:39 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="8">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>9&quot; Inch Bangla Quran</td>
+                <td>1000</td>
+                <td>1050.00</td>
+                <td>Jan. 17, 2026, 6:39 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="7">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>7.5&quot; Inch Bangla Quran</td>
+                <td>1000</td>
+                <td>850.00</td>
+                <td>Jan. 17, 2026, 6:39 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="6">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>6&quot; Inch Bangla Quran</td>
+                <td>1000</td>
+                <td>700.00</td>
+                <td>Jan. 17, 2026, 6:39 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="5">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>Turkish Crafted Jaunamaz</td>
+                <td>1000</td>
+                <td>550.00</td>
+                <td>Jan. 17, 2026, 6:38 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="1">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>10/12 Inc Premium Quality Velvet Box</td>
+                <td>1000</td>
+                <td>750.00</td>
+                <td>Jan. 17, 2026, 6:34 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="24">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>9.5/9.5 Inc Premium Quality Velvet Box</td>
+                <td>1000</td>
+                <td>550.00</td>
+                <td>Jan. 17, 2026, 6:34 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="23">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>7/8 Inc Premium Quality Velvet Box</td>
+                <td>1000</td>
+                <td>380.00</td>
+                <td>Jan. 17, 2026, 6:34 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="22">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>6/7 Inc Premium Quality Velvet Box</td>
+                <td>1000</td>
+                <td>300.00</td>
+                <td>Jan. 17, 2026, 6:34 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="21">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>Attar Box</td>
+                <td>1000</td>
+                <td>100.00</td>
+                <td>Jan. 17, 2026, 6:24 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="11">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>8&quot; Inch Velvet Quran</td>
+                <td>1000</td>
+                <td>850.00</td>
+                <td>Jan. 17, 2026, 6:23 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="4">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>6&quot; Inch Velvet Quran</td>
+                <td>1000</td>
+                <td>600.00</td>
+                <td>Jan. 17, 2026, 6:23 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="3">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>4&quot; Inch Velvet Quran</td>
+                <td>1000</td>
+                <td>400.00</td>
+                <td>Jan. 17, 2026, 6:23 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="2">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>couple janamaz</td>
+                <td>100</td>
+                <td>1850.00</td>
+                <td>Jan. 15, 2026, 3:48 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="29">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>Dua Card</td>
+                <td>1000</td>
+                <td>10.00</td>
+                <td>Jan. 14, 2026, 5:25 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="28">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>Kit kat, Dairy Milk, Snickers</td>
+                <td>1000</td>
+                <td>35.00</td>
+                <td>Jan. 14, 2026, 5:25 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="27">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>Chocolate Oat</td>
+                <td>1000</td>
+                <td>20.00</td>
+                <td>Jan. 14, 2026, 5:25 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="26">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>Topi</td>
+                <td>1000</td>
+                <td>50.00</td>
+                <td>Jan. 14, 2026, 5:24 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="25">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>Dua-Dorud and Zikr Book</td>
+                <td>1000</td>
+                <td>50.00</td>
+                <td>Jan. 14, 2026, 5:22 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="20">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>5 Mini Rose Flower</td>
+                <td>1000</td>
+                <td>10.00</td>
+                <td>Jan. 14, 2026, 5:22 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="19">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>Suti Hijab</td>
+                <td>1000</td>
+                <td>280.00</td>
+                <td>Jan. 14, 2026, 5:21 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="18">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>Counter Tajbi</td>
+                <td>1000</td>
+                <td>80.00</td>
+                <td>Jan. 14, 2026, 5:21 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="17">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>100 Dana Tajbi</td>
+                <td>1000</td>
+                <td>70.00</td>
+                <td>Jan. 14, 2026, 5:20 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="16">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>Meshwak</td>
+                <td>1000</td>
+                <td>20.00</td>
+                <td>Jan. 14, 2026, 5:20 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="15">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>Shurma Dani</td>
+                <td>1000</td>
+                <td>100.00</td>
+                <td>Jan. 14, 2026, 5:20 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="14">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>Shurma</td>
+                <td>1000</td>
+                <td>100.00</td>
+                <td>Jan. 14, 2026, 5:20 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="13">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>Attar + Pouch Bag</td>
+                <td>1000</td>
+                <td>80.00</td>
+                <td>Jan. 14, 2026, 5:19 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="12">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>Book Mark</td>
+                <td>1000</td>
+                <td>10.00</td>
+                <td>Jan. 14, 2026, 5:19 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="10">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+              <tr>
+                <td>Hat+ Pa moja</td>
+                <td>1000</td>
+                <td>100.00</td>
+                <td>Jan. 14, 2026, 5:18 p.m.</td>
+                <td>
+                  <button class="edit-product-btn" data-id="9">Edit</button>
+                </td>
+                
+                
+              </tr>
+              
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      <!-- PopUp JS-->
+
+      <script>
+    document.addEventListener("DOMContentLoaded", function () {
+  const modal = document.getElementById("productModal");
+  const openModalBtn = document.getElementById("openModal");
+  const closeModalBtn = document.querySelector(".close");
+  const preview = document.getElementById("preview");
+
+  const imageInput = document.getElementById("imageUpload");
+const imageUploadDiv = document.querySelector(".image-upload");
+
+imageInput.onchange = function() {
+  const clone = imageUploadDiv.cloneNode(true);
+  clone.querySelector("input").value = "";
+  clone.querySelector("input").onchange = imageInput.onchange;
+  imageUploadDiv.parentNode.insertBefore(clone, imageUploadDiv.nextSibling);
+};
+
+
+
+  // Open modal
+  openModalBtn.addEventListener("click", () => {
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
+  });
+
+  // Close modal
+  closeModalBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+    document.body.style.overflow = "auto";
+  });
+
+  // Close on outside click
+  window.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+      document.body.style.overflow = "auto";
+    }
+  });
+
+  // Image preview
+  imageInput.addEventListener("change", function () {
+    preview.innerHTML = "";
+    const files = Array.from(this.files);
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        preview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+});
+  // Optional: Handle form submit via AJAX End
+
+
+  </script>
+
+
+      <!-- Product Update JS-->
+<script>
+
+// static/back/js/edit_popup.js
+
+document.addEventListener("DOMContentLoaded", function () {
+  const modal = document.getElementById("editPopupModal");
+  const closeModal = document.querySelector(".edit-close-btn");
+  const form = document.getElementById("editProductForm");
+  const imageInput = document.getElementById("edit_image_upload");
+  const preview = document.getElementById("edit_image_preview");
+  const modalTitle = document.querySelector(".edit-modal-header h2");
+  const submitBtn = document.querySelector(".edit-submit-btn");
+
+  let currentEditId = null;
+
+  // --- DELETE PRODUCT LOGIC ---
+const deleteBtn = document.querySelector(".delete-prod-btn");
+
+
+deleteBtn.addEventListener("click", function () {
+  if (!currentEditId) {
+    alert("⚠️ Please select a product to delete.");
+    return;
+  }
+
+  const confirmDelete = confirm("Are you sure you want to delete this product?");
+  if (!confirmDelete) return;
+
+  fetch(`dbproducts/${currentEditId}/delete/`, {
+    method: "DELETE",
+    headers: {
+      "X-CSRFToken": csrftoken,
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        alert("🗑️ " + data.message);
+        modal.style.display = "none";
+        document.body.style.overflow = "auto";
+        form.reset();
+        preview.innerHTML = "";
+        currentEditId = null;
+      } else {
+        alert("❌ " + data.message);
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      alert("⚠️ Something went wrong while deleting.");
+    });
+});
+  // --- DELETE PRODUCT LOGIC END ---
+
+  // Helper: Get CSRF token
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + "=")) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  const csrftoken = getCookie("csrftoken");
+
+  // Open edit modal
+  document.querySelectorAll(".edit-product-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      currentEditId = btn.dataset.id;
+      modal.style.display = "flex";
+      document.body.style.overflow = "hidden";
+
+      modalTitle.textContent = "Edit Product";
+      submitBtn.textContent = "Update Product";
+
+      // Fetch data to prefill
+      fetch("/dbproducts/0/edit/".replace("0", currentEditId))
+        .then((res) => res.json())
+        .then((data) => {
+          document.getElementById("edit_name").value = data.name;
+          document.getElementById("edit_price").value = data.price;
+          document.getElementById("edit_discount_price").value = data.discounted_price;
+          document.getElementById("edit_stock").value = data.stock_quantity;
+          document.getElementById("edit_description").value = data.description;
+          document.getElementById("edit_status").value = data.status ? "True" : "False";
+
+          preview.innerHTML = "";
+          if (data.image) {
+            const img = document.createElement("img");
+            img.src = data.image;
+            preview.appendChild(img);
+          }
+        });
+    });
+  });
+
+  // Close modal
+  closeModal.addEventListener("click", () => {
+    modal.style.display = "none";
+    document.body.style.overflow = "auto";
+  });
+
+  window.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+      document.body.style.overflow = "auto";
+    }
+  });
+
+  // Image preview
+  imageInput.addEventListener("change", function () {
+    preview.innerHTML = "";
+    const files = Array.from(this.files);
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        preview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  // Form submit
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const formData = new FormData(form);
+
+    const url = currentEditId
+      ? `dbproducts/${currentEditId}/edit/`
+      : form.action;
+
+    fetch(url, {
+      method: "POST",
+      headers: { "X-CSRFToken": csrftoken },
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          alert("✅ Product updated successfully!");
+          modal.style.display = "none";
+          document.body.style.overflow = "auto";
+          form.reset();
+          preview.innerHTML = "";
+          currentEditId = null;
+          modalTitle.textContent = "Edit Product";
+          submitBtn.textContent = "Update Product";
+        } else {
+          alert("❌ Update failed.");
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("⚠️ Something went wrong.");
+      });
+  });
+});
+
+
+
+
+
+    </script>
+
+      
+
+
+    
+    </section>
+
+    <footer class="footer">
+      <div>© 2025 Matrix AI • Built with n8n</div>
+      <div class="footer-links">Privacy • Terms</div>
+    </footer>
+  </main>
+</div>
+
+<!-- Overlay for mobile -->
+<div id="overlay" class="overlay"></div>
+
+
+
+
+
+
+  <script>
+    document.getElementById('connectBtn').addEventListener('click', function(){
+      const token = prompt('Paste your Messenger Page Access Token or Webhook URL:');
+      if(token) alert('Saved (demo). In production you would POST this securely to your backend.');
+    });
+  </script>
+
+
+  <script>
+    
+  const avatar = document.getElementById('avatarMenu');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+
+  avatar.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  });
+
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+  });
+</script>
+
+ <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      const menuToggle = document.getElementById('menuToggle');
+
+      if (menuToggle && sidebar && overlay) {
+        menuToggle.addEventListener('click', () => {
+          sidebar.classList.toggle('active');
+          overlay.classList.toggle('active');
+          document.body.classList.toggle('sidebar-open');
+        });
+
+        overlay.addEventListener('click', () => {
+          sidebar.classList.remove('active');
+          overlay.classList.remove('active');
+          document.body.classList.remove('sidebar-open');
+        });
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

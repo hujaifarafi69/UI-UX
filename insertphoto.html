@@ -1,0 +1,1377 @@
+
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard | Matrix AI</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ==============================
+   ROOT VARIABLES & BASE STYLES
+============================== */
+:root {
+  --bg: #f7fbff;
+  --panel: #ffffff;
+  --muted: #64748b;
+  --accent: #2563eb;
+  --soft: #f1f5f9;
+  --radius: 12px;
+  --shadow: 0 6px 20px rgba(16, 24, 40, 0.08);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden; /* Prevent page scrolling */
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: #0f172a;
+  height: 100vh; /* Full viewport height */
+  overflow: hidden; /* Prevent body scrolling */
+}
+
+.app {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+}
+
+/* ==============================
+   SIDEBAR
+============================== */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #fff, #fbfdff);
+  padding: 28px;
+  border-right: 1px solid #eef2f6;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  transition: transform 0.3s ease;
+  z-index: 1001;
+  overflow-y: auto;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), #60a5fa);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.brand-text {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 18px;
+}
+
+.nav-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #0f172a;
+  text-decoration: none;
+  font-weight: 600;
+  opacity: 0.88;
+  transition: background 0.2s ease;
+}
+
+.nav-item:hover {
+  background: var(--soft);
+}
+
+.nav-item.active {
+  background: linear-gradient(90deg, #eef2ff, #f5faff);
+  box-shadow: var(--shadow);
+}
+
+/* ==============================
+   MAIN LAYOUT
+============================== */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 260px;
+  transition: margin-left 0.3s ease;
+  height: 100vh; /* Full height */
+  overflow: hidden; /* Prevent overflow */
+}
+
+/* ==============================
+   TOPBAR
+============================== */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 28px;
+  background: #fff;
+  border-bottom: 1px solid #eef2f6;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.search-wrap {
+  flex: 1;
+  max-width: 640px;
+}
+
+.search {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #e6eefc;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Buttons & Avatar */
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #1e4ed8;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #eef2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ==============================
+   CONTENT & FOOTER
+============================== */
+.content {
+  flex: 1; /* Take remaining space */
+  padding: 0; /* Remove padding, layout will have its own */
+  overflow: hidden; /* Prevent scrolling */
+  min-height: 0; /* Allow shrinking */
+}
+
+.footer {
+  padding: 18px 28px;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* ==============================
+   HAMBURGER MENU
+============================== */
+.menu-toggle {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  display: none;
+  padding: 6px 10px;
+}
+
+/* ==============================
+   OVERLAY (MOBILE BACKDROP)
+============================== */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+}
+
+.overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ==============================
+   RESPONSIVE DESIGN
+============================== */
+@media (max-width: 1000px) {
+  .menu-toggle {
+    display: block; /* show hamburger */
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .main {
+    margin-left: 0;
+  }
+
+  body.sidebar-open {
+    overflow: hidden; /* prevent scroll when sidebar open */
+  }
+
+  .search-wrap {
+    display: none; /* hide search if screen too small */
+  }
+}
+
+@media (max-width: 600px) {
+  .btn-primary {
+    padding: 8px;
+    font-size: 0.85rem;
+  }
+
+  .topbar {
+    padding: 16px;
+  }
+
+  .content {
+    padding: 0; /* Remove padding on mobile */
+  }
+}
+</style>
+
+<style>
+/* ---------- ROOT ---------- */
+:root{
+  --bg:#f5f7fb;
+  --white:#fff;
+  --primary:#7c3aed;
+  --primary-soft:#ede9fe;
+  --border:#e5e7eb;
+  --muted:#6b7280;
+  --radius:14px;
+  --shadow:0 4px 14px rgba(0,0,0,0.08);
+  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+body{background:var(--bg);}
+
+/* LAYOUT as grid for responsive spacing - FIXED */
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr 320px;
+  gap: 18px;
+  height: 100%; /* Fill the content area */
+  padding: 20px;
+  min-height: 0; /* Crucial for nested flex */
+  overflow: hidden; /* Prevent overflow */
+}
+
+/* ---------- CHAT LIST PANEL ---------- */
+.chat-list{
+  background:var(--white);
+  border-radius:12px;
+  border:1px solid var(--border);
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  min-height: 0; /* Allow shrinking */
+}
+
+.chat-search{
+  padding:10px 14px;
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+
+.msg-image img {
+  max-width: 240px;
+  border-radius: 10px;
+  display: block;
+  margin-top: 6px;
+}
+
+.msg.from .msg-image img {
+  margin-right: auto;
+}
+
+.msg.to .msg-image img {
+  margin-left: auto;
+}
+
+.chat-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+}
+
+.chat-tab {
+  background: transparent;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.chat-tab.active {
+  color: #fff;
+  background: var(--primary);
+  border-radius: 6px;
+}
+
+.chat-list-body{
+  flex: 1; /* Take available space */
+  overflow-y:auto;
+  padding-right:6px;
+  min-height: 0; /* Allow shrinking */
+}
+
+/* Chat item */
+.chat-item{
+  padding:12px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-top:10px;
+  cursor:pointer;
+  transition:0.15s;
+  text-decoration:none;
+  color:inherit;
+}
+.chat-item:hover,
+.chat-item.active{
+  background:var(--primary-soft);
+}
+
+.chat-avatar{
+  width:44px; height:44px;
+  border-radius:50%;
+  background:#ddd;
+  flex-shrink:0;
+}
+
+.chat-info .name{
+  font-weight:600;
+}
+.chat-info .preview{
+  font-size:13px;
+  color:var(--muted);
+  max-width:200px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* ---------- MESSAGES PANEL ---------- */
+.chat-window{
+  background:var(--white);
+  border-radius:12px;
+  border:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  box-shadow: var(--shadow);
+  overflow:hidden;
+  min-height: 0; /* Allow shrinking */
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  gap: 12px;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-info strong {
+  font-size: 16px;
+}
+
+.header-info small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.header-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 8px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.header-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #ddd;
+  flex-shrink: 0;
+}
+
+.header-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.chat-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #ddd;
+  flex-shrink: 0;
+}
+
+.chat-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.chat-messages{
+  flex:1;
+  padding:20px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.9));
+  min-height: 0; /* Allow shrinking */
+}
+
+.msg{
+  padding:10px 14px;
+  border-radius:12px;
+  max-width:75%;
+  line-height:1.4;
+  word-wrap:break-word;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.msg.to{
+  align-self:flex-end;
+  background:var(--primary);
+  color:white;
+}
+
+.msg.from{
+  align-self:flex-start;
+  background:#f3f4f6;
+  color:#111827;
+}
+
+/* nice timestamp small */
+.msg small {
+  display:block;
+  font-size:11px;
+  color:var(--muted);
+  margin-top:6px;
+}
+
+/* input area */
+.chat-input{
+  padding:14px;
+  border-top:1px solid var(--border);
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+.chat-input input{
+  flex:1;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+}
+.chat-input button{
+  padding:10px 18px;
+  border:none;
+  background:var(--primary);
+  color:white;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+/* ---------- PROFILE PANEL ---------- */
+.profile{
+  background:var(--white);
+  border-radius:12px;
+  border:1px solid var(--border);
+  padding:22px;
+  height:100%;
+  box-shadow: var(--shadow);
+  overflow:auto;
+  min-height: 0; /* Allow shrinking */
+}
+
+.profile .avatar{
+  width:90px; height:90px;
+  border-radius:50%;
+  background:#ddd;
+  margin:auto;
+}
+
+.profile h3{
+  margin-top:12px;
+  text-align:center;
+}
+
+.profile small{
+  display:block;
+  margin:auto;
+  text-align:center;
+  color:var(--muted);
+  margin-bottom:20px;
+}
+
+.profile-btn{
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  text-align:center;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+.btn-primary{
+  background:var(--primary);
+  color:white;
+  border:none;
+}
+
+/* Back button */
+.mobile-back {
+  display: none;
+}
+
+/* responsive */
+@media (max-width: 786px) {
+  .layout { 
+    grid-template-columns: 1fr; 
+    height: 100%;
+    padding: 0;
+  }
+  .chat-list, .chat-window, .profile { 
+    height: 100%;
+    border-radius: 0;
+    border: none;
+  }
+  
+  .profile {
+    display: none;
+  }
+}
+
+/* ---------- MOBILE VIEW ---------- */
+@media (max-width: 768px) {
+  body {
+    overflow: hidden;
+  }
+
+  .layout {
+    height: 100%;
+    padding: 0;
+  }
+
+  /* Chat window visibility */
+  .chat-list {
+    display: flex;
+  }
+
+  .chat-window {
+    display: none;
+  }
+
+  .layout.chat-open .chat-list {
+    display: none;
+  }
+
+  .layout.chat-open .chat-window {
+    display: flex;
+  }
+
+  .header-btn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  /* Header sticky */
+  .chat-header {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+    padding: 12px 16px;
+    flex-shrink: 0;
+  }
+
+  /* Messages scrollable */
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    padding-bottom: 80px; /* Space for fixed input */
+  }
+
+  .msg {
+    max-width: 90%;
+    font-size: 15px;
+  }
+
+  /* Footer (input area) sticky at bottom */
+  .chat-input {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    z-index: 20;
+  }
+
+  .chat-input input {
+    flex: 1;
+    padding: 12px 16px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .chat-input button {
+    padding: 12px 20px;
+    font-size: 14px;
+    border-radius: 10px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    cursor: pointer;
+  }
+
+  /* Touch-friendly chat items */
+  .chat-item {
+    padding: 16px;
+  }
+
+  /* Back button for mobile */
+  .mobile-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--primary);
+    padding: 4px 8px;
+    border-radius: 6px;
+  }
+
+  .mobile-back:hover {
+    background: var(--primary-soft);
+  }
+}
+
+/* Small mobile adjustments */
+@media (max-width: 480px) {
+  .chat-header {
+    padding: 10px 12px;
+  }
+
+  .chat-messages {
+    padding: 12px;
+    padding-bottom: 70px;
+  }
+
+  .chat-input {
+    padding: 10px 12px;
+  }
+
+  .msg {
+    max-width: 95%;
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+}
+</style>
+
+</head>
+
+<body>
+  <div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="logo">MA</div>
+      <div class="brand-text">Matrix AI</div>
+    </div>
+    <nav class="nav">
+      <a class="nav-item " href="/db">🏠 Dashboard</a>
+      <a class="nav-item " href="/dbproducts">📦 Products</a>
+      <a class="nav-item " href="/dbpackages">🧾 Packages</a>
+      <a class="nav-item " href="/dborders">🧾 Orders</a>
+      <a class="nav-item active" href="/dbchats">🧾 Messages</a>
+      <a class="nav-item " href="/dboptions">🧾 Settings</a>
+      
+      
+      
+      
+      <a class="nav-item" href="/logout">⚙️ Logout</a>
+    </nav>
+  </aside>
+
+ <!-- Overlay -->
+    <div id="overlay" class="overlay"></div>
+
+  <!-- Main -->
+  <main class="main">
+    <header class="topbar">
+        <div class="left-section">
+          <!-- Hamburger button (only visible on mobile) -->
+          <button id="menuToggle" class="menu-toggle">☰</button>
+
+          <div class="search-wrap">
+            <input class="search" placeholder="Search conversations, products..." />
+          </div>
+        </div>
+
+        <div class="top-actions">
+          <button id="connectBtn" class="btn-primary">Connect Messenger</button>
+          <div class="avatar" id="avatarMenu">Z</div>
+        </div>
+      </header>
+
+
+    <section class="content">
+      
+<div class="layout">
+
+  <!-- CHAT LIST -->
+  <div class="chat-list">
+    <input type="text" id="searchInput" class="chat-search" placeholder="Search conversations…">
+
+    <div class="chat-tabs">
+  <button class="chat-tab active" data-platform="all">All</button>
+  <button class="chat-tab" data-platform="messenger">Messenger</button>
+  <button class="chat-tab" data-platform="whatsapp">WhatsApp</button>
+  </div>
+
+    <div class="chat-list-body">
+      
+        
+          <a href="?cid=7084" onclick="openChat()" style="text-decoration:none; color:inherit;">
+            <div class="chat-item " data-platform="messenger">
+              <div class="chat-avatar">
+                <img src="https://img.freepik.com/premium-vector/vector-flat-illustration-grayscale-avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-social-media-profiles-icons-screensavers-as-templatex9xa_719432-2210.jpg"
+                  alt="Avatar">
+              </div>
+              <div class="chat-info">
+                <div class="name">
+                  
+                    33733622522918788
+                  
+                </div>
+
+                <div class="preview">
+                  No messages
+                </div>
+              </div>
+            </div>
+          </a>
+        
+          <a href="?cid=7026" onclick="openChat()" style="text-decoration:none; color:inherit;">
+            <div class="chat-item active" data-platform="messenger">
+              <div class="chat-avatar">
+                <img src="https://img.freepik.com/premium-vector/vector-flat-illustration-grayscale-avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-social-media-profiles-icons-screensavers-as-templatex9xa_719432-2210.jpg"
+                  alt="Avatar">
+              </div>
+              <div class="chat-info">
+                <div class="name">
+                  
+                    24948900104720511
+                  
+                </div>
+
+                <div class="preview">
+                  hiiiii
+                </div>
+              </div>
+            </div>
+          </a>
+        
+      
+    </div>
+
+    
+  </div>
+
+  <!-- CHAT WINDOW -->
+  <div class="chat-window">
+    
+      <div class="chat-header">
+      <div class="mobile-back" onclick="closeChat()">← Back</div>
+
+      <div class="header-left">
+        <div class="header-avatar">
+        <img src="https://img.freepik.com/premium-vector/vector-flat-illustration-grayscale-avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-social-media-profiles-icons-screensavers-as-templatex9xa_719432-2210.jpg"
+            alt="Avatar">
+        </div>
+        <div class="header-info">
+          <strong>24948900104720511</strong><br>
+          <small>
+            
+              AI Enabled ✨
+            
+          </small>
+        </div>
+      </div>
+
+      
+        <button class="header-btn"
+                onclick="toggleAI('/api/zyberseo/conv/disable/7026')">
+          Disable AI
+        </button>
+      
+    </div>
+
+
+      <div class="chat-messages" id="chatMessages">
+        
+          
+            <div class="msg from" data-msg-id="47512">
+              
+              
+                
+                  <div class="msg-text">
+                    Hi
+                  </div>
+                
+
+                
+                
+
+                <small>25 Jan, 2026 14:25</small>
+            </div>
+          
+            <div class="msg to" data-msg-id="47519">
+              
+              
+                
+                  <div class="msg-text">
+                    yo
+                  </div>
+                
+
+                
+                
+
+                <small>25 Jan, 2026 14:26</small>
+            </div>
+          
+            <div class="msg to" data-msg-id="47518">
+              
+              
+                
+                  <div class="msg-text">
+                    আসসালামু আলাইকুম। প্রাইজ এবং বিস্তারিত তথ্য জানার জন্য আপনার পছন্দের প্রোডাক্টটির ছবি বা স্ক্রিনশট দিয়ে সহযোগিতা করবেন প্লিজ।
+                  </div>
+                
+
+                
+                
+
+                <small>25 Jan, 2026 14:26</small>
+            </div>
+          
+            <div class="msg to" data-msg-id="47546">
+              
+              
+                
+                  <div class="msg-text">
+                    Yayyy
+                  </div>
+                
+
+                
+                
+
+                <small>25 Jan, 2026 14:30</small>
+            </div>
+          
+            <div class="msg to" data-msg-id="47925">
+              
+              
+                
+                  <div class="msg-text">
+                    saas
+                  </div>
+                
+
+                
+                
+
+                <small>25 Jan, 2026 15:40</small>
+            </div>
+          
+            <div class="msg to" data-msg-id="47954">
+              
+              
+                
+                  <div class="msg-text">
+                    fghj
+                  </div>
+                
+
+                
+                
+
+                <small>25 Jan, 2026 15:51</small>
+            </div>
+          
+            <div class="msg to" data-msg-id="48323">
+              
+              
+                
+                  <div class="msg-text">
+                    hiiiii
+                  </div>
+                
+
+                
+                
+
+                <small>25 Jan, 2026 17:59</small>
+            </div>
+          
+        
+      </div>
+
+      <div class="chat-input">
+        <input type="hidden" name="csrfmiddlewaretoken" value="Cyx5afWp22huG1dsrxVbr41mXUWLdsOi6h6PO3s9OMpsBBPPXm3wCGS99cOquHBw">
+
+        <!-- Hidden file input -->
+    <input type="file" id="fileInput" accept="image/*" hidden>
+
+    <input type="text" id="messageInput" placeholder="Type a message…" autocomplete="off">
+  
+        <!-- Attachment button -->
+        <button id="attachBtn" type="button">📎</button>
+        
+        <button id="sendBtn">Send</button>
+      </div>
+
+    
+  </div>
+
+  <!-- PROFILE PANEL -->
+  <div class="profile">
+    
+      <div class="avatar"></div>
+      <h3>24948900104720511</h3>
+      <small>
+        Joined 25 Jan, 2026
+      </small>
+
+      
+    <button class="profile-btn" 
+            onclick="toggleAI('/api/zyberseo/conv/disable/7026')">
+        Disable AI
+    </button>
+
+
+
+ <script>
+function toggleAI(url) {
+    fetch(url, {
+        method: "GET",
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("AI toggled:", data);
+        // Optional: update the button text without reloading
+        location.reload();  // remove this if you will update UI manually
+    })
+    .catch(err => console.error("Error:", err));
+}
+</script>
+
+
+      
+
+      <button class="profile-btn btn-primary">Manage Orders</button>
+      <button class="profile-btn">Create Order</button>
+
+      <h4 style="margin-top:22px;">Summary</h4>
+      <p style="color:var(--muted); font-size:14px;">
+        No summary yet.
+      </p>
+
+      <h4 style="margin-top:22px;">Meta</h4>
+      <p style="color:var(--muted); font-size:14px;">
+        Platform: Messenger<br>
+        AI Enabled: True
+      </p>
+    
+  </div>
+
+</div>
+
+
+ 
+<script>
+
+
+</script>
+
+
+
+
+
+  
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Auto-scroll chat to bottom
+  const msgBox = document.getElementById("chatMessages");
+  if (msgBox) {
+    msgBox.scrollTop = msgBox.scrollHeight;
+  }
+
+  // simple search filter on client side
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput) {
+    searchInput.addEventListener("input", function() {
+      const q = this.value.toLowerCase();
+      document.querySelectorAll(".chat-list .chat-item").forEach(function(item) {
+        const name = item.querySelector(".name").textContent.toLowerCase();
+        const preview = item.querySelector(".preview").textContent.toLowerCase();
+        if (name.includes(q) || preview.includes(q)) {
+          item.style.display = "flex";
+        } else {
+          item.style.display = "none";
+        }
+      });
+    });
+  }
+
+  // CSRF helper for fetch
+  function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+  const csrftoken = getCookie('csrftoken');
+  // Send message functionality
+  const sendBtn = document.getElementById("sendBtn");
+  const input = document.getElementById("messageInput");
+  
+  
+  if (sendBtn && input) {
+    function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      // find conversation id from URL ?cid=
+      const params = new URLSearchParams(window.location.search);
+      const cid = params.get('cid');
+      if (!cid) {
+        alert('Please select a conversation first.');
+        return;
+      }
+
+      // optimistic UI: append message to chat
+      const newMsg = document.createElement('div');
+      newMsg.className = 'msg to';
+      newMsg.innerHTML = text + '<small>Sending…</small>';
+      msgBox.appendChild(newMsg);
+      msgBox.scrollTop = msgBox.scrollHeight;
+      input.value = '';
+
+      fetch("/dbsend_message", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken,
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({ conversation_id: cid, text: text })
+      })
+      .then(resp => {
+        if (!resp.ok) throw new Error('Network response not ok');
+        return resp.json();
+      })
+      .then(data => {
+        // replace optimistic content by server-provided html/text
+        if (data.status === 'ok') {
+          // update last appended (assumes optimistic order)
+          newMsg.innerHTML = data.sent_text + '<small>' + data.sent_ts + '</small>';
+
+          if (data.bot_reply_html) {
+            const botEl = document.createElement('div');
+            botEl.className = 'msg from';
+            botEl.innerHTML = data.bot_reply_html + '<small>' + data.bot_reply_ts + '</small>';
+            msgBox.appendChild(botEl);
+          }
+
+          msgBox.scrollTop = msgBox.scrollHeight;
+        } else {
+          newMsg.innerHTML = '<em style="color:#ff3333">Failed to send</em>';
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        newMsg.innerHTML = '<em style="color:#ff3333">Failed to send</em>';
+      });
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+    input.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  }
+});
+</script>
+
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const tabs = document.querySelectorAll(".chat-tab");
+  const chats = document.querySelectorAll(".chat-item");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", function () {
+      const platform = this.dataset.platform;
+
+      // toggle active tab
+      tabs.forEach(t => t.classList.remove("active"));
+      this.classList.add("active");
+
+      // filter chats
+      chats.forEach(chat => {
+        if (platform === "all") {
+          chat.style.display = "flex";
+        } else {
+          chat.style.display =
+            chat.dataset.platform === platform ? "flex" : "none";
+        }
+      });
+    });
+  });
+});
+</script>
+
+
+
+
+
+<script>
+function openChat() {
+  document.querySelector('.layout')?.classList.add('chat-open');
+}
+
+function closeChat() {
+  document.querySelector('.layout')?.classList.remove('chat-open');
+  history.pushState({}, "", window.location.pathname);
+}
+
+/* Auto open chat if cid exists (refresh / direct link) */
+document.addEventListener("DOMContentLoaded", function () {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('cid')) {
+    document.querySelector('.layout')?.classList.add('chat-open');
+  }
+});
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+const loadBtn = document.getElementById("loadMoreChats");
+const chatList = document.getElementById("chatList");
+
+if (loadBtn) {
+  loadBtn.addEventListener("click", function () {
+    const page = this.dataset.next;
+
+    fetch(`?page=${page}`, {
+      headers: { "X-Requested-With": "XMLHttpRequest" }
+    })
+    .then(res => res.text())
+    .then(html => {
+      const temp = document.createElement("div");
+      temp.innerHTML = html;
+
+      temp.querySelectorAll(".chat-item").forEach(el => {
+        chatList.appendChild(el.parentElement);
+      });
+
+      this.remove(); // remove button after loading
+    });
+  });
+}
+</script>
+
+
+
+    </section>
+
+    <footer class="footer">
+      <div>© 2025 Matrix AI • Built with n8n</div>
+      <div class="footer-links">Privacy • Terms</div>
+    </footer>
+  </main>
+</div>
+
+<!-- Overlay for mobile -->
+<div id="overlay" class="overlay"></div>
+
+
+
+
+
+
+  <script>
+    document.getElementById('connectBtn').addEventListener('click', function(){
+      const token = prompt('Paste your Messenger Page Access Token or Webhook URL:');
+      if(token) alert('Saved (demo). In production you would POST this securely to your backend.');
+    });
+  </script>
+
+
+  <script>
+    
+  const avatar = document.getElementById('avatarMenu');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+
+  avatar.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  });
+
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+  });
+</script>
+
+ <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      const menuToggle = document.getElementById('menuToggle');
+
+      if (menuToggle && sidebar && overlay) {
+        menuToggle.addEventListener('click', () => {
+          sidebar.classList.toggle('active');
+          overlay.classList.toggle('active');
+          document.body.classList.toggle('sidebar-open');
+        });
+
+        overlay.addEventListener('click', () => {
+          sidebar.classList.remove('active');
+          overlay.classList.remove('active');
+          document.body.classList.remove('sidebar-open');
+        });
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>

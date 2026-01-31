@@ -1,0 +1,5610 @@
+
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard | Matrix AI</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+/* ==============================
+   ROOT VARIABLES & BASE STYLES
+============================== */
+:root {
+  --bg: #f7fbff;
+  --panel: #ffffff;
+  --muted: #64748b;
+  --accent: #2563eb;
+  --soft: #f1f5f9;
+  --radius: 12px;
+  --shadow: 0 6px 20px rgba(16, 24, 40, 0.08);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ==============================
+   SIDEBAR
+============================== */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #fff, #fbfdff);
+  padding: 28px;
+  border-right: 1px solid #eef2f6;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  transition: transform 0.3s ease;
+  z-index: 1001;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), #60a5fa);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.brand-text {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 18px;
+}
+
+.nav-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #0f172a;
+  text-decoration: none;
+  font-weight: 600;
+  opacity: 0.88;
+  transition: background 0.2s ease;
+}
+
+.nav-item:hover {
+  background: var(--soft);
+}
+
+.nav-item.active {
+  background: linear-gradient(90deg, #eef2ff, #f5faff);
+  box-shadow: var(--shadow);
+}
+
+/* ==============================
+   MAIN LAYOUT
+============================== */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 260px;
+  transition: margin-left 0.3s ease;
+}
+
+/* ==============================
+   TOPBAR
+============================== */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 28px;
+  background: #fff;
+  border-bottom: 1px solid #eef2f6;
+}
+
+.search-wrap {
+  flex: 1;
+  max-width: 640px;
+}
+
+.search {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #e6eefc;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Buttons & Avatar */
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #1e4ed8;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #eef2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ==============================
+   CONTENT & FOOTER
+============================== */
+.content {
+  padding: 20px 28px 40px;
+}
+
+.footer {
+  padding: 18px 28px;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ==============================
+   HAMBURGER MENU
+============================== */
+.menu-toggle {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  display: none;
+  padding: 6px 10px;
+}
+
+/* ==============================
+   OVERLAY (MOBILE BACKDROP)
+============================== */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+}
+
+.overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ==============================
+   RESPONSIVE DESIGN
+============================== */
+@media (max-width: 1000px) {
+  .menu-toggle {
+    display: block; /* show hamburger */
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .main {
+    margin-left: 0;
+  }
+
+  body.sidebar-open {
+    overflow: hidden; /* prevent scroll when sidebar open */
+  }
+
+  .search-wrap {
+    display: none; /* hide search if screen too small */
+  }
+}
+
+@media (max-width: 600px) {
+  .btn-primary {
+    padding: 8px;
+    font-size: 0.85rem;
+  }
+
+  .topbar {
+    padding: 16px;
+  }
+
+  .content {
+    padding: 16px;
+  }
+}
+
+</style>
+  
+<style>
+/* =====================
+   BASE STYLING
+===================== */
+:root {
+  --primary: #2563eb;
+  --accent: #3b82f6;
+  --bg-light: #f8fafc;
+  --border: #e2e8f0;
+  --muted: #64748b;
+}
+
+.content {
+  padding: 20px;
+  background: var(--bg-light);
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.page-header {
+  margin-bottom: 25px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 5px;
+}
+
+.page-header .sub {
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* =====================
+   PANEL & BUTTON
+===================== */
+.panel {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  padding: 20px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.panel-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.btn-primary:hover {
+  background: var(--accent);
+}
+
+/* =====================
+   TABLE STYLING
+===================== */
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+  color: #1f2937;
+}
+
+.orders-table th {
+  background-color: #f1f5f9;
+  font-weight: 700;
+  color: #334155;
+}
+
+.orders-table tr:hover {
+  background-color: #f9fafb;
+}
+
+/* =====================
+   STATUS SELECT
+===================== */
+.status-select {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+.status-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* =====================
+   RESPONSIVE DESIGN
+===================== */
+@media (max-width: 768px) {
+  .panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .orders-table,
+  .orders-table thead,
+  .orders-table tbody,
+  .orders-table th,
+  .orders-table td,
+  .orders-table tr {
+    display: block;
+  }
+
+  .orders-table thead {
+    display: none;
+  }
+
+  .orders-table tr {
+    background: #fff;
+    margin-bottom: 15px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  }
+
+  .orders-table td {
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    padding: 8px 0;
+  }
+
+  .orders-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .orders-table td:last-child {
+    border-bottom: none;
+  }
+
+  .orders-table td select {
+    width: 100%;
+    margin-top: 5px;
+  }
+  
+
+
+  /* Add labels for mobile using data-labels dynamically */
+  .orders-table td:nth-child(1)::before { content: "Order ID"; }
+  .orders-table td:nth-child(2)::before { content: "Product"; }
+  .orders-table td:nth-child(3)::before { content: "Customer ID"; }
+  .orders-table td:nth-child(4)::before { content: "Amount"; }
+  .orders-table td:nth-child(5)::before { content: "Status"; }
+  .orders-table td:nth-child(6)::before { content: "Created At"; }
+}
+
+</style>
+
+</head>
+
+<body>
+  <div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="logo">MA</div>
+      <div class="brand-text">Matrix AI</div>
+    </div>
+    <nav class="nav">
+      <a class="nav-item " href="/db">🏠 Dashboard</a>
+      <a class="nav-item " href="/dbproducts">📦 Products</a>
+      <a class="nav-item " href="/dbpackages">🧾 Packages</a>
+      <a class="nav-item active" href="/dborders">🧾 Orders</a>
+      <a class="nav-item " href="/dbchats">🧾 Messages</a>
+      <a class="nav-item " href="/dboptions">🧾 Settings</a>
+      
+      
+      
+      
+      <a class="nav-item" href="/logout">⚙️ Logout</a>
+    </nav>
+  </aside>
+
+ <!-- Overlay -->
+    <div id="overlay" class="overlay"></div>
+
+  <!-- Main -->
+  <main class="main">
+    <header class="topbar">
+        <div class="left-section">
+          <!-- Hamburger button (only visible on mobile) -->
+          <button id="menuToggle" class="menu-toggle">☰</button>
+
+          <div class="search-wrap">
+            <input class="search" placeholder="Search conversations, products..." />
+          </div>
+        </div>
+
+        <div class="top-actions">
+          <button id="connectBtn" class="btn-primary">Connect Messenger</button>
+          <div class="avatar" id="avatarMenu">I</div>
+        </div>
+      </header>
+
+
+    <section class="content">
+      
+
+<!-- Main -->
+
+      
+
+    <!-- Content -->
+    <div class="content">
+      <div class="page-header">
+        <h1>Orders</h1>
+        <p class="sub">View and manage your customer orders</p>
+      </div>
+
+      <!-- Orders Table -->
+      <div class="panel" style="margin-top:20px;">
+        <div class="panel-header">
+          <h3>All Orders</h3>
+          <button class="btn-primary">Export CSV</button>
+        </div>
+
+        <table class="orders-table">
+  <thead>
+    <tr>
+      <th>Order ID</th>
+      <th>Customer</th>
+      <th>Amount</th>
+      <th>Status</th>
+      <th>Created</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr  style="background-color: #ffcccc; color: #9b1c1c; border: 2px solid #d9534f;">
+
+      <td>#ord_f114fa</td>
+      
+
+      <td>
+        <strong>Jubayer</strong><br>
+        <small class="muted">01793504010</small>
+      </td>
+      <td>৳ 1199.00</td>
+      <td>
+        <select class="status-select" data-order-id="20">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </td>
+      <td>2026-01-15 14:23</td>
+      <td>
+        <button class="btn-view" onclick="openOrderModal(20)">
+          View
+        </button>
+      </td>
+    </tr>
+    
+    <tr  style="background-color: #ffcccc; color: #9b1c1c; border: 2px solid #d9534f;">
+
+      <td>#ord_1agebg</td>
+      
+
+      <td>
+        <strong>Ahmed Khan</strong><br>
+        <small class="muted">+923001234567</small>
+      </td>
+      <td>৳ 2464.00</td>
+      <td>
+        <select class="status-select" data-order-id="19">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </td>
+      <td>2026-01-15 13:48</td>
+      <td>
+        <button class="btn-view" onclick="openOrderModal(19)">
+          View
+        </button>
+      </td>
+    </tr>
+    
+    <tr  style="background-color: #ffcccc; color: #9b1c1c; border: 2px solid #d9534f;">
+
+      <td>#ord_1ae1e3</td>
+      
+
+      <td>
+        <strong>Ahmed Khan</strong><br>
+        <small class="muted">+923001234567</small>
+      </td>
+      <td>৳ 3249.00</td>
+      <td>
+        <select class="status-select" data-order-id="18">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </td>
+      <td>2026-01-15 13:46</td>
+      <td>
+        <button class="btn-view" onclick="openOrderModal(18)">
+          View
+        </button>
+      </td>
+    </tr>
+    
+    <tr  style="background-color: #ffcccc; color: #9b1c1c; border: 2px solid #d9534f;">
+
+      <td>#ord_g3a1ee</td>
+      
+
+      <td>
+        <strong>Ahmed Khan</strong><br>
+        <small class="muted">+923001234567</small>
+      </td>
+      <td>৳ 2464.00</td>
+      <td>
+        <select class="status-select" data-order-id="17">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </td>
+      <td>2026-01-15 13:36</td>
+      <td>
+        <button class="btn-view" onclick="openOrderModal(17)">
+          View
+        </button>
+      </td>
+    </tr>
+    
+    <tr  style="background-color: #ffcccc; color: #9b1c1c; border: 2px solid #d9534f;">
+
+      <td>#ord_abdeaf</td>
+      
+
+      <td>
+        <strong>Ahmed Khan</strong><br>
+        <small class="muted">+923001234567</small>
+      </td>
+      <td>৳ 2499.00</td>
+      <td>
+        <select class="status-select" data-order-id="16">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </td>
+      <td>2026-01-15 13:36</td>
+      <td>
+        <button class="btn-view" onclick="openOrderModal(16)">
+          View
+        </button>
+      </td>
+    </tr>
+    
+    <tr  style="background-color: #ffcccc; color: #9b1c1c; border: 2px solid #d9534f;">
+
+      <td>#ord_c1ccf1</td>
+      
+
+      <td>
+        <strong>Ahmed Khan</strong><br>
+        <small class="muted">+923001234567</small>
+      </td>
+      <td>৳ 3249.00</td>
+      <td>
+        <select class="status-select" data-order-id="15">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </td>
+      <td>2026-01-15 13:35</td>
+      <td>
+        <button class="btn-view" onclick="openOrderModal(15)">
+          View
+        </button>
+      </td>
+    </tr>
+    
+    <tr  style="background-color: #ffcccc; color: #9b1c1c; border: 2px solid #d9534f;">
+
+      <td>#ord_4eag13</td>
+      
+
+      <td>
+        <strong>Ahmed Khan</strong><br>
+        <small class="muted">+923001234567</small>
+      </td>
+      <td>৳ 1.00</td>
+      <td>
+        <select class="status-select" data-order-id="14">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </td>
+      <td>2026-01-15 13:34</td>
+      <td>
+        <button class="btn-view" onclick="openOrderModal(14)">
+          View
+        </button>
+      </td>
+    </tr>
+    
+    <tr  style="background-color: #ffcccc; color: #9b1c1c; border: 2px solid #d9534f;">
+
+      <td>#ord_34a2g3</td>
+      
+
+      <td>
+        <strong>Ahmed Khan</strong><br>
+        <small class="muted">+923001234567</small>
+      </td>
+      <td>৳ 2499.00</td>
+      <td>
+        <select class="status-select" data-order-id="12">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </td>
+      <td>2026-01-15 13:15</td>
+      <td>
+        <button class="btn-view" onclick="openOrderModal(12)">
+          View
+        </button>
+      </td>
+    </tr>
+    
+    <tr  style="background-color: #ffcccc; color: #9b1c1c; border: 2px solid #d9534f;">
+
+      <td>#ord_fecedc</td>
+      
+
+      <td>
+        <strong>Ahmed Khan</strong><br>
+        <small class="muted">+923001234567</small>
+      </td>
+      <td>৳ 2499.00</td>
+      <td>
+        <select class="status-select" data-order-id="11">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </td>
+      <td>2026-01-15 13:14</td>
+      <td>
+        <button class="btn-view" onclick="openOrderModal(11)">
+          View
+        </button>
+      </td>
+    </tr>
+    
+    <tr  style="background-color: #ffcccc; color: #9b1c1c; border: 2px solid #d9534f;">
+
+      <td>#ord_bdcfdc</td>
+      
+
+      <td>
+        <strong>Ahmed Khan</strong><br>
+        <small class="muted">+923001234567</small>
+      </td>
+      <td>৳ 2499.00</td>
+      <td>
+        <select class="status-select" data-order-id="10">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </td>
+      <td>2026-01-15 13:08</td>
+      <td>
+        <button class="btn-view" onclick="openOrderModal(10)">
+          View
+        </button>
+      </td>
+    </tr>
+    
+    <tr  style="background-color: #ffcccc; color: #9b1c1c; border: 2px solid #d9534f;">
+
+      <td>#ord_g3gffb</td>
+      
+
+      <td>
+        <strong>assss</strong><br>
+        <small class="muted">01793504012</small>
+      </td>
+      <td>৳ 2499.00</td>
+      <td>
+        <select class="status-select" data-order-id="7">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </td>
+      <td>2026-01-14 23:11</td>
+      <td>
+        <button class="btn-view" onclick="openOrderModal(7)">
+          View
+        </button>
+      </td>
+    </tr>
+    
+    <tr  style="background-color: #ffcccc; color: #9b1c1c; border: 2px solid #d9534f;">
+
+      <td>#ord_2abb2b</td>
+      
+
+      <td>
+        <strong>assss</strong><br>
+        <small class="muted">01793504012</small>
+      </td>
+      <td>৳ 2170.00</td>
+      <td>
+        <select class="status-select" data-order-id="6">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </td>
+      <td>2026-01-14 23:03</td>
+      <td>
+        <button class="btn-view" onclick="openOrderModal(6)">
+          View
+        </button>
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+
+
+<div class="modal" id="orderModal20">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3>Order #ord_f114fa</h3>
+      <span class="close" onclick="closeOrderModal(20)">&times;</span>
+    </div>
+
+    <div class="modal-body">
+
+      <p><strong>Customer:</strong> Jubayer</p>
+      <p><strong>Phone:</strong> 01793504010</p>
+      <p><strong>Address:</strong> Basundhara R/A</p>
+      
+
+      <!-- ✅ STATUS SELECT (JSON BUTTON SAFE) -->
+      <p>
+        <strong>Status:</strong>
+        <select class="status-select" data-order-id="20">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </p>
+
+      <hr>
+
+      <h4>Items</h4>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Line Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Turkish Crafted Jaunamaz
+              
+              <br><small class="muted">SKU: 1</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              6&quot; Inch Bangla Quran
+              
+              <br><small class="muted">SKU: 5</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 700.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 700.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Book Mark
+              
+              <br><small class="muted">SKU: 10</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 10.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 10.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Attar Box
+              
+              <br><small class="muted">SKU: 11</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 100.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 100.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma
+              
+              <br><small class="muted">SKU: 13</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 100.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 100.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma Dani
+              
+              <br><small class="muted">SKU: 14</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 100.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 100.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Meshwak
+              
+              <br><small class="muted">SKU: 15</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 20.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 20.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              100 Dana Tajbi
+              
+              <br><small class="muted">SKU: 16</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 70.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 70.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              5 Mini Rose Flower
+              
+              <br><small class="muted">SKU: 19</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 10.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 10.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              9.5/9.5 Inc Premium Quality Velvet Box
+              
+              <br><small class="muted">SKU: 23</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 550.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 550.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Kit kat, Dairy Milk, Snickers
+              
+              <br><small class="muted">SKU: 27</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 35.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 35.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua Card
+              
+              <br><small class="muted">SKU: 28</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 10.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 10.00 × 1
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+
+      <div class="total">
+        <strong>Total Amount:</strong> ৳ 1199.00
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="orderModal19">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3>Order #ord_1agebg</h3>
+      <span class="close" onclick="closeOrderModal(19)">&times;</span>
+    </div>
+
+    <div class="modal-body">
+
+      <p><strong>Customer:</strong> Ahmed Khan</p>
+      <p><strong>Phone:</strong> +923001234567</p>
+      <p><strong>Address:</strong> House 45, Gulshan Block 7</p>
+      
+
+      <!-- ✅ STATUS SELECT (JSON BUTTON SAFE) -->
+      <p>
+        <strong>Status:</strong>
+        <select class="status-select" data-order-id="19">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </p>
+
+      <hr>
+
+      <h4>Items</h4>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Line Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Counter Tajbi
+              
+              <br><small class="muted">SKU: 17</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 80.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 80.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Turkish Crafted Jaunamaz
+              
+              <br><small class="muted">SKU: 1</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 550.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 550.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              6&quot; Inch Bangla Quran
+              
+              <br><small class="muted">SKU: 5</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 700.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 700.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Hat+ Pa moja
+              
+              <br><small class="muted">SKU: 9</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 100.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 100.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Book Mark
+              
+              <br><small class="muted">SKU: 10</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 10.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 10.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Attar Box
+              
+              <br><small class="muted">SKU: 11</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 100.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 100.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma
+              
+              <br><small class="muted">SKU: 13</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 100.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 100.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma Dani
+              
+              <br><small class="muted">SKU: 14</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 100.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 100.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Meshwak
+              
+              <br><small class="muted">SKU: 15</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 20.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 20.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              100 Dana Tajbi
+              
+              <br><small class="muted">SKU: 16</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 70.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 70.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Suti Hijab
+              
+              <br><small class="muted">SKU: 18</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 280.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 280.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              5 Mini Rose Flower
+              
+              <br><small class="muted">SKU: 19</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 10.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 10.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua-Dorud and Zikr Book
+              
+              <br><small class="muted">SKU: 20</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 50.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 50.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              9.5/9.5 Inc Premium Quality Velvet Box
+              
+              <br><small class="muted">SKU: 23</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 550.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 550.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Kit kat, Dairy Milk, Snickers
+              
+              <br><small class="muted">SKU: 27</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua Card
+              
+              <br><small class="muted">SKU: 28</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 10.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 10.00 × 1
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+
+      <div class="total">
+        <strong>Total Amount:</strong> ৳ 2464.00
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="orderModal18">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3>Order #ord_1ae1e3</h3>
+      <span class="close" onclick="closeOrderModal(18)">&times;</span>
+    </div>
+
+    <div class="modal-body">
+
+      <p><strong>Customer:</strong> Ahmed Khan</p>
+      <p><strong>Phone:</strong> +923001234567</p>
+      <p><strong>Address:</strong> House 45, Gulshan Block 7</p>
+      
+
+      <!-- ✅ STATUS SELECT (JSON BUTTON SAFE) -->
+      <p>
+        <strong>Status:</strong>
+        <select class="status-select" data-order-id="18">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </p>
+
+      <hr>
+
+      <h4>Items</h4>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Line Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Turkish Crafted Jaunamaz
+              
+              <br><small class="muted">SKU: 1</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 550.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 550.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              6&quot; Inch Bangla Quran
+              
+              <br><small class="muted">SKU: 5</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 700.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 700.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Hat+ Pa moja
+              
+              <br><small class="muted">SKU: 9</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 100.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 100.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Book Mark
+              
+              <br><small class="muted">SKU: 10</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 10.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 10.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Attar Box
+              
+              <br><small class="muted">SKU: 11</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 100.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 100.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma
+              
+              <br><small class="muted">SKU: 13</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 100.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 100.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma Dani
+              
+              <br><small class="muted">SKU: 14</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 100.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 100.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Meshwak
+              
+              <br><small class="muted">SKU: 15</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 20.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 20.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              100 Dana Tajbi
+              
+              <br><small class="muted">SKU: 16</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 70.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 70.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Counter Tajbi
+              
+              <br><small class="muted">SKU: 17</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 80.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 80.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Suti Hijab
+              
+              <br><small class="muted">SKU: 18</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 280.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 280.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              5 Mini Rose Flower
+              
+              <br><small class="muted">SKU: 19</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 10.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 10.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua-Dorud and Zikr Book
+              
+              <br><small class="muted">SKU: 20</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 50.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 50.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              9.5/9.5 Inc Premium Quality Velvet Box
+              
+              <br><small class="muted">SKU: 23</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 550.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 550.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Kit kat, Dairy Milk, Snickers
+              
+              <br><small class="muted">SKU: 27</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 35.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 35.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua Card
+              
+              <br><small class="muted">SKU: 28</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 10.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 10.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              10/12 Inc Premium Quality Velvet Box
+              
+              <br><small class="muted">SKU: 24</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 750.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 750.00 × 1
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+
+      <div class="total">
+        <strong>Total Amount:</strong> ৳ 3249.00
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="orderModal17">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3>Order #ord_g3a1ee</h3>
+      <span class="close" onclick="closeOrderModal(17)">&times;</span>
+    </div>
+
+    <div class="modal-body">
+
+      <p><strong>Customer:</strong> Ahmed Khan</p>
+      <p><strong>Phone:</strong> +923001234567</p>
+      <p><strong>Address:</strong> House 45, Gulshan Block 7</p>
+      
+
+      <!-- ✅ STATUS SELECT (JSON BUTTON SAFE) -->
+      <p>
+        <strong>Status:</strong>
+        <select class="status-select" data-order-id="17">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </p>
+
+      <hr>
+
+      <h4>Items</h4>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Line Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Turkish Crafted Jaunamaz
+              
+              <br><small class="muted">SKU: 1</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              6&quot; Inch Bangla Quran
+              
+              <br><small class="muted">SKU: 5</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Hat+ Pa moja
+              
+              <br><small class="muted">SKU: 9</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Book Mark
+              
+              <br><small class="muted">SKU: 10</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Attar Box
+              
+              <br><small class="muted">SKU: 11</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma
+              
+              <br><small class="muted">SKU: 13</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma Dani
+              
+              <br><small class="muted">SKU: 14</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Meshwak
+              
+              <br><small class="muted">SKU: 15</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              100 Dana Tajbi
+              
+              <br><small class="muted">SKU: 16</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Counter Tajbi
+              
+              <br><small class="muted">SKU: 17</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Suti Hijab
+              
+              <br><small class="muted">SKU: 18</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              5 Mini Rose Flower
+              
+              <br><small class="muted">SKU: 19</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua-Dorud and Zikr Book
+              
+              <br><small class="muted">SKU: 20</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              9.5/9.5 Inc Premium Quality Velvet Box
+              
+              <br><small class="muted">SKU: 23</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Kit kat, Dairy Milk, Snickers
+              
+              <br><small class="muted">SKU: 27</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua Card
+              
+              <br><small class="muted">SKU: 28</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+
+      <div class="total">
+        <strong>Total Amount:</strong> ৳ 2464.00
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="orderModal16">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3>Order #ord_abdeaf</h3>
+      <span class="close" onclick="closeOrderModal(16)">&times;</span>
+    </div>
+
+    <div class="modal-body">
+
+      <p><strong>Customer:</strong> Ahmed Khan</p>
+      <p><strong>Phone:</strong> +923001234567</p>
+      <p><strong>Address:</strong> House 45, Gulshan Block 7</p>
+      
+
+      <!-- ✅ STATUS SELECT (JSON BUTTON SAFE) -->
+      <p>
+        <strong>Status:</strong>
+        <select class="status-select" data-order-id="16">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </p>
+
+      <hr>
+
+      <h4>Items</h4>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Line Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Turkish Crafted Jaunamaz
+              
+              <br><small class="muted">SKU: 1</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              6&quot; Inch Bangla Quran
+              
+              <br><small class="muted">SKU: 5</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Hat+ Pa moja
+              
+              <br><small class="muted">SKU: 9</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Book Mark
+              
+              <br><small class="muted">SKU: 10</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Attar Box
+              
+              <br><small class="muted">SKU: 11</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma
+              
+              <br><small class="muted">SKU: 13</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma Dani
+              
+              <br><small class="muted">SKU: 14</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Meshwak
+              
+              <br><small class="muted">SKU: 15</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              100 Dana Tajbi
+              
+              <br><small class="muted">SKU: 16</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Counter Tajbi
+              
+              <br><small class="muted">SKU: 17</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Suti Hijab
+              
+              <br><small class="muted">SKU: 18</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              5 Mini Rose Flower
+              
+              <br><small class="muted">SKU: 19</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua-Dorud and Zikr Book
+              
+              <br><small class="muted">SKU: 20</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              9.5/9.5 Inc Premium Quality Velvet Box
+              
+              <br><small class="muted">SKU: 23</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Kit kat, Dairy Milk, Snickers
+              
+              <br><small class="muted">SKU: 27</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua Card
+              
+              <br><small class="muted">SKU: 28</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+
+      <div class="total">
+        <strong>Total Amount:</strong> ৳ 2499.00
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="orderModal15">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3>Order #ord_c1ccf1</h3>
+      <span class="close" onclick="closeOrderModal(15)">&times;</span>
+    </div>
+
+    <div class="modal-body">
+
+      <p><strong>Customer:</strong> Ahmed Khan</p>
+      <p><strong>Phone:</strong> +923001234567</p>
+      <p><strong>Address:</strong> House 45, Gulshan Block 7</p>
+      
+
+      <!-- ✅ STATUS SELECT (JSON BUTTON SAFE) -->
+      <p>
+        <strong>Status:</strong>
+        <select class="status-select" data-order-id="15">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </p>
+
+      <hr>
+
+      <h4>Items</h4>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Line Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Turkish Crafted Jaunamaz
+              
+              <br><small class="muted">SKU: 1</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              6&quot; Inch Bangla Quran
+              
+              <br><small class="muted">SKU: 5</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Hat+ Pa moja
+              
+              <br><small class="muted">SKU: 9</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Book Mark
+              
+              <br><small class="muted">SKU: 10</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Attar Box
+              
+              <br><small class="muted">SKU: 11</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma
+              
+              <br><small class="muted">SKU: 13</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma Dani
+              
+              <br><small class="muted">SKU: 14</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Meshwak
+              
+              <br><small class="muted">SKU: 15</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              100 Dana Tajbi
+              
+              <br><small class="muted">SKU: 16</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Counter Tajbi
+              
+              <br><small class="muted">SKU: 17</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Suti Hijab
+              
+              <br><small class="muted">SKU: 18</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              5 Mini Rose Flower
+              
+              <br><small class="muted">SKU: 19</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua-Dorud and Zikr Book
+              
+              <br><small class="muted">SKU: 20</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              9.5/9.5 Inc Premium Quality Velvet Box
+              
+              <br><small class="muted">SKU: 23</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Kit kat, Dairy Milk, Snickers
+              
+              <br><small class="muted">SKU: 27</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua Card
+              
+              <br><small class="muted">SKU: 28</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              10/12 Inc Premium Quality Velvet Box
+              
+              <br><small class="muted">SKU: 24</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 750.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 750.00 × 1
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+
+      <div class="total">
+        <strong>Total Amount:</strong> ৳ 3249.00
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="orderModal14">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3>Order #ord_4eag13</h3>
+      <span class="close" onclick="closeOrderModal(14)">&times;</span>
+    </div>
+
+    <div class="modal-body">
+
+      <p><strong>Customer:</strong> Ahmed Khan</p>
+      <p><strong>Phone:</strong> +923001234567</p>
+      <p><strong>Address:</strong> House 45, Gulshan Block 7</p>
+      
+
+      <!-- ✅ STATUS SELECT (JSON BUTTON SAFE) -->
+      <p>
+        <strong>Status:</strong>
+        <select class="status-select" data-order-id="14">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </p>
+
+      <hr>
+
+      <h4>Items</h4>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Line Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Turkish Crafted Jaunamaz
+              
+              <br><small class="muted">SKU: 1</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              6&quot; Inch Bangla Quran
+              
+              <br><small class="muted">SKU: 5</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Hat+ Pa moja
+              
+              <br><small class="muted">SKU: 9</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Book Mark
+              
+              <br><small class="muted">SKU: 10</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Attar Box
+              
+              <br><small class="muted">SKU: 11</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma
+              
+              <br><small class="muted">SKU: 13</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma Dani
+              
+              <br><small class="muted">SKU: 14</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Meshwak
+              
+              <br><small class="muted">SKU: 15</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              100 Dana Tajbi
+              
+              <br><small class="muted">SKU: 16</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Counter Tajbi
+              
+              <br><small class="muted">SKU: 17</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Suti Hijab
+              
+              <br><small class="muted">SKU: 18</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              5 Mini Rose Flower
+              
+              <br><small class="muted">SKU: 19</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua-Dorud and Zikr Book
+              
+              <br><small class="muted">SKU: 20</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              9.5/9.5 Inc Premium Quality Velvet Box
+              
+              <br><small class="muted">SKU: 23</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Kit kat, Dairy Milk, Snickers
+              
+              <br><small class="muted">SKU: 27</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua Card
+              
+              <br><small class="muted">SKU: 28</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+
+      <div class="total">
+        <strong>Total Amount:</strong> ৳ 1.00
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="orderModal12">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3>Order #ord_34a2g3</h3>
+      <span class="close" onclick="closeOrderModal(12)">&times;</span>
+    </div>
+
+    <div class="modal-body">
+
+      <p><strong>Customer:</strong> Ahmed Khan</p>
+      <p><strong>Phone:</strong> +923001234567</p>
+      <p><strong>Address:</strong> House 45, Gulshan Block 7</p>
+      
+
+      <!-- ✅ STATUS SELECT (JSON BUTTON SAFE) -->
+      <p>
+        <strong>Status:</strong>
+        <select class="status-select" data-order-id="12">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </p>
+
+      <hr>
+
+      <h4>Items</h4>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Line Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Turkish Crafted Jaunamaz
+              
+              <br><small class="muted">SKU: 1</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              6&quot; Inch Bangla Quran
+              
+              <br><small class="muted">SKU: 5</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Hat+ Pa moja
+              
+              <br><small class="muted">SKU: 9</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Book Mark
+              
+              <br><small class="muted">SKU: 10</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Attar Box
+              
+              <br><small class="muted">SKU: 11</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma
+              
+              <br><small class="muted">SKU: 13</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma Dani
+              
+              <br><small class="muted">SKU: 14</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Meshwak
+              
+              <br><small class="muted">SKU: 15</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              100 Dana Tajbi
+              
+              <br><small class="muted">SKU: 16</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Counter Tajbi
+              
+              <br><small class="muted">SKU: 17</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Suti Hijab
+              
+              <br><small class="muted">SKU: 18</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              5 Mini Rose Flower
+              
+              <br><small class="muted">SKU: 19</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua-Dorud and Zikr Book
+              
+              <br><small class="muted">SKU: 20</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              9.5/9.5 Inc Premium Quality Velvet Box
+              
+              <br><small class="muted">SKU: 23</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Kit kat, Dairy Milk, Snickers
+              
+              <br><small class="muted">SKU: 27</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua Card
+              
+              <br><small class="muted">SKU: 28</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+
+      <div class="total">
+        <strong>Total Amount:</strong> ৳ 2499.00
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="orderModal11">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3>Order #ord_fecedc</h3>
+      <span class="close" onclick="closeOrderModal(11)">&times;</span>
+    </div>
+
+    <div class="modal-body">
+
+      <p><strong>Customer:</strong> Ahmed Khan</p>
+      <p><strong>Phone:</strong> +923001234567</p>
+      <p><strong>Address:</strong> House 45, Gulshan Block 7</p>
+      
+
+      <!-- ✅ STATUS SELECT (JSON BUTTON SAFE) -->
+      <p>
+        <strong>Status:</strong>
+        <select class="status-select" data-order-id="11">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </p>
+
+      <hr>
+
+      <h4>Items</h4>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Line Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Turkish Crafted Jaunamaz
+              
+              <br><small class="muted">SKU: 1</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              6&quot; Inch Bangla Quran
+              
+              <br><small class="muted">SKU: 5</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Hat+ Pa moja
+              
+              <br><small class="muted">SKU: 9</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Book Mark
+              
+              <br><small class="muted">SKU: 10</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Attar Box
+              
+              <br><small class="muted">SKU: 11</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma
+              
+              <br><small class="muted">SKU: 13</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma Dani
+              
+              <br><small class="muted">SKU: 14</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Meshwak
+              
+              <br><small class="muted">SKU: 15</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              100 Dana Tajbi
+              
+              <br><small class="muted">SKU: 16</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Counter Tajbi
+              
+              <br><small class="muted">SKU: 17</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Suti Hijab
+              
+              <br><small class="muted">SKU: 18</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              5 Mini Rose Flower
+              
+              <br><small class="muted">SKU: 19</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua-Dorud and Zikr Book
+              
+              <br><small class="muted">SKU: 20</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              9.5/9.5 Inc Premium Quality Velvet Box
+              
+              <br><small class="muted">SKU: 23</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Kit kat, Dairy Milk, Snickers
+              
+              <br><small class="muted">SKU: 27</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua Card
+              
+              <br><small class="muted">SKU: 28</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+
+      <div class="total">
+        <strong>Total Amount:</strong> ৳ 2499.00
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="orderModal10">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3>Order #ord_bdcfdc</h3>
+      <span class="close" onclick="closeOrderModal(10)">&times;</span>
+    </div>
+
+    <div class="modal-body">
+
+      <p><strong>Customer:</strong> Ahmed Khan</p>
+      <p><strong>Phone:</strong> +923001234567</p>
+      <p><strong>Address:</strong> House 45, Gulshan Block 7</p>
+      
+
+      <!-- ✅ STATUS SELECT (JSON BUTTON SAFE) -->
+      <p>
+        <strong>Status:</strong>
+        <select class="status-select" data-order-id="10">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </p>
+
+      <hr>
+
+      <h4>Items</h4>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Line Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Turkish Crafted Jaunamaz
+              
+              <br><small class="muted">SKU: 1</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              6&quot; Inch Bangla Quran
+              
+              <br><small class="muted">SKU: 5</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Hat+ Pa moja
+              
+              <br><small class="muted">SKU: 9</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Book Mark
+              
+              <br><small class="muted">SKU: 10</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Attar Box
+              
+              <br><small class="muted">SKU: 11</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma
+              
+              <br><small class="muted">SKU: 13</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma Dani
+              
+              <br><small class="muted">SKU: 14</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Meshwak
+              
+              <br><small class="muted">SKU: 15</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              100 Dana Tajbi
+              
+              <br><small class="muted">SKU: 16</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Counter Tajbi
+              
+              <br><small class="muted">SKU: 17</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Suti Hijab
+              
+              <br><small class="muted">SKU: 18</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              5 Mini Rose Flower
+              
+              <br><small class="muted">SKU: 19</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua-Dorud and Zikr Book
+              
+              <br><small class="muted">SKU: 20</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              9.5/9.5 Inc Premium Quality Velvet Box
+              
+              <br><small class="muted">SKU: 23</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Kit kat, Dairy Milk, Snickers
+              
+              <br><small class="muted">SKU: 27</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua Card
+              
+              <br><small class="muted">SKU: 28</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+
+      <div class="total">
+        <strong>Total Amount:</strong> ৳ 2499.00
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="orderModal7">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3>Order #ord_g3gffb</h3>
+      <span class="close" onclick="closeOrderModal(7)">&times;</span>
+    </div>
+
+    <div class="modal-body">
+
+      <p><strong>Customer:</strong> assss</p>
+      <p><strong>Phone:</strong> 01793504012</p>
+      <p><strong>Address:</strong> assss</p>
+      
+
+      <!-- ✅ STATUS SELECT (JSON BUTTON SAFE) -->
+      <p>
+        <strong>Status:</strong>
+        <select class="status-select" data-order-id="7">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </p>
+
+      <hr>
+
+      <h4>Items</h4>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Line Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Turkish Crafted Jaunamaz
+              
+              <br><small class="muted">SKU: 1</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              6&quot; Inch Bangla Quran
+              
+              <br><small class="muted">SKU: 5</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Hat+ Pa moja
+              
+              <br><small class="muted">SKU: 9</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Book Mark
+              
+              <br><small class="muted">SKU: 10</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Attar Box
+              
+              <br><small class="muted">SKU: 11</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma
+              
+              <br><small class="muted">SKU: 13</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Shurma Dani
+              
+              <br><small class="muted">SKU: 14</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Meshwak
+              
+              <br><small class="muted">SKU: 15</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              100 Dana Tajbi
+              
+              <br><small class="muted">SKU: 16</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Counter Tajbi
+              
+              <br><small class="muted">SKU: 17</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Suti Hijab
+              
+              <br><small class="muted">SKU: 18</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              5 Mini Rose Flower
+              
+              <br><small class="muted">SKU: 19</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua-Dorud and Zikr Book
+              
+              <br><small class="muted">SKU: 20</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              9.5/9.5 Inc Premium Quality Velvet Box
+              
+              <br><small class="muted">SKU: 23</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Kit kat, Dairy Milk, Snickers
+              
+              <br><small class="muted">SKU: 27</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+
+          
+          <tr>
+            <!-- ✅ SAFE: works for internal + external products -->
+            <td>
+              Dua Card
+              
+              <br><small class="muted">SKU: 28</small>
+              
+            </td>
+
+            <td>1</td>
+            <td>৳ 0.00</td>
+
+            <!-- ✅ NO BROKEN MATH -->
+            <td>
+              ৳ 0.00 × 1
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+
+      <div class="total">
+        <strong>Total Amount:</strong> ৳ 2499.00
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="orderModal6">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3>Order #ord_2abb2b</h3>
+      <span class="close" onclick="closeOrderModal(6)">&times;</span>
+    </div>
+
+    <div class="modal-body">
+
+      <p><strong>Customer:</strong> assss</p>
+      <p><strong>Phone:</strong> 01793504012</p>
+      <p><strong>Address:</strong> assss</p>
+      
+
+      <!-- ✅ STATUS SELECT (JSON BUTTON SAFE) -->
+      <p>
+        <strong>Status:</strong>
+        <select class="status-select" data-order-id="6">
+          
+            <option value="draft" >
+              Draft
+            </option>
+          
+            <option value="pending" selected>
+              Pending
+            </option>
+          
+            <option value="delivering" >
+              Delivering
+            </option>
+          
+            <option value="completed" >
+              Completed
+            </option>
+          
+            <option value="refunded" >
+              Refunded
+            </option>
+          
+        </select>
+      </p>
+
+      <hr>
+
+      <h4>Items</h4>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Line Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          
+          <tr>
+            <td colspan="4" class="muted">No items</td>
+          </tr>
+          
+        </tbody>
+      </table>
+
+      <div class="total">
+        <strong>Total Amount:</strong> ৳ 2170.00
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+      </div>
+    </div>
+
+    <script>
+
+      function openOrderModal(orderId) {
+  document.getElementById(`orderModal${orderId}`).style.display = "flex";
+}
+
+function closeOrderModal(orderId) {
+  document.getElementById(`orderModal${orderId}`).style.display = "none";
+}
+  // CSRF helper
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  const csrftoken = getCookie('csrftoken');
+
+  document.querySelectorAll('.status-select').forEach(select => {
+    select.addEventListener('change', function() {
+      const orderId = this.dataset.orderId;
+      const newStatus = this.value;
+
+      fetch("/dborders/update-status/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken,
+        },
+        body: JSON.stringify({
+          order_id: orderId,
+          status: newStatus,
+        }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          this.style.border = "2px solid #22c55e"; // green border to indicate success
+          setTimeout(() => this.style.border = "", 1000);
+        } else {
+          alert("Failed to update order status!");
+        }
+      })
+      .catch(err => console.error(err));
+    });
+  });
+</script>
+
+<style>
+.status-select {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+.status-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.btn-view {
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+.btn-view:hover {
+  background: #1d4ed8;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  width: 80%; 
+  max-width: 800px;
+  min-width: 300px;
+  max-height: 90vh; 
+  border-radius: 12px;
+  overflow: hidden;
+  overflow-y: auto; /* Make content scrollable if too tall */
+  display: flex;
+  flex-direction: column;
+}
+
+
+.modal-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+.modal-body {
+  padding: 20px;
+  flex: 1; 
+  overflow-y: auto; 
+}
+
+.close {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+.items-table th,
+.items-table td {
+  padding: 8px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.total {
+  margin-top: 15px;
+  text-align: right;
+  font-size: 16px;
+}
+
+.muted {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.empty {
+  text-align: center;
+  padding: 20px;
+  color: #9ca3af;
+}
+</style>
+
+
+
+
+
+
+  
+
+    </section>
+
+    <footer class="footer">
+      <div>© 2025 Matrix AI • Built with n8n</div>
+      <div class="footer-links">Privacy • Terms</div>
+    </footer>
+  </main>
+</div>
+
+<!-- Overlay for mobile -->
+<div id="overlay" class="overlay"></div>
+
+
+
+
+
+
+  <script>
+    document.getElementById('connectBtn').addEventListener('click', function(){
+      const token = prompt('Paste your Messenger Page Access Token or Webhook URL:');
+      if(token) alert('Saved (demo). In production you would POST this securely to your backend.');
+    });
+  </script>
+
+
+  <script>
+    
+  const avatar = document.getElementById('avatarMenu');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+
+  avatar.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  });
+
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+  });
+</script>
+
+ <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      const menuToggle = document.getElementById('menuToggle');
+
+      if (menuToggle && sidebar && overlay) {
+        menuToggle.addEventListener('click', () => {
+          sidebar.classList.toggle('active');
+          overlay.classList.toggle('active');
+          document.body.classList.toggle('sidebar-open');
+        });
+
+        overlay.addEventListener('click', () => {
+          sidebar.classList.remove('active');
+          overlay.classList.remove('active');
+          document.body.classList.remove('sidebar-open');
+        });
+      }
+    });
+  </script>
+
+
+  
+</body>
+</html>
